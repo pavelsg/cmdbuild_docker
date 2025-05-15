@@ -5,7 +5,7 @@ volumes:
 
 services:
     openmaint_db:
-        image: itmicus/cmdbuild:db-3.0
+        image: pavelsg/cmdbuild:db-3.0
         container_name: openmaint_db
         volumes:
             - openmaint-db:/var/lib/postgresql
@@ -19,7 +19,7 @@ services:
         mem_reservation: 300m
 
     openmaint_app:
-        image: itmicus/cmdbuild:om-2.0-3.2.1
+        image: pavelsg/cmdbuild:om-2.0-3.2.1
         container_name: openmaint_app
         links:
            - openmaint_db

@@ -5,7 +5,7 @@ volumes:
 
 services:
     cmdbuild_db:
-        image: itmicus/cmdbuild:db-3.0
+        image: pavelsg/cmdbuild:db-3.0
         container_name: cmdbuild_db
         volumes:
             - cmdbuild-db:/var/lib/postgresql
@@ -19,7 +19,7 @@ services:
         mem_reservation: 300m
 
     cmdbuild_app:
-        image: itmicus/cmdbuild:app-3.1.1
+        image: pavelsg/cmdbuild:app-3.1.1
         container_name: cmdbuild_app
         links:
            - cmdbuild_db

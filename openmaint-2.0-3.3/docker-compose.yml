@@ -16,7 +16,7 @@ services:
 
 
     openmaint_app:
-        image: itmicus/cmdbuild:om-2.0-3.3
+        image: pavelsg/cmdbuild:om-2.0-3.3
         container_name: openmaint_app
         links:
            - openmaint_db

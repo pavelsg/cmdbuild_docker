@@ -16,7 +16,7 @@ services:
         restart: always
 
     cmdbuild_app:
-        image: itmicus/cmdbuild:app-3.4.4
+        image: pavelsg/cmdbuild:app-3.4.4
         container_name: cmdbuild_app
         links:
            - cmdbuild_db

@@ -1,8 +1,8 @@
 ### Deploy by docker run
 **CMDbuild with demo database**  
 ```bash
-docker run --name cmdbuild_db -p 5432:5432 -d itmicus/cmdbuild:db-3.0
-docker run --name cmdbuild_app --link cmdbuild_db -p 8090:8080 -d itmicus/cmdbuild:app-3.4.2
+docker run --name cmdbuild_db -p 5432:5432 -d pavelsg/cmdbuild:db-3.0
+docker run --name cmdbuild_app --link cmdbuild_db -p 8090:8080 -d pavelsg/cmdbuild:app-3.4.2
 ``` 
 or simply run
 ```bash

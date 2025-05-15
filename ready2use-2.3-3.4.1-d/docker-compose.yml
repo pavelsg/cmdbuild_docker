@@ -16,7 +16,7 @@ services:
 
 
     cmdbuild_app:
-        image: itmicus/cmdbuild:r2u-2.3-3.4.1-d
+        image: pavelsg/cmdbuild:r2u-2.3-3.4.1-d
         container_name: cmdbuild_app
         links:
            - cmdbuild_db
