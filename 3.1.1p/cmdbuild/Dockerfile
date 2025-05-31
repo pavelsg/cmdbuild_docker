@@ -16,8 +16,16 @@ ENV JMX_EXPORTER_VERSION=0.12.0
 ENV JMX_JAR=jmx_prometheus_javaagent-$JMX_EXPORTER_VERSION.jar
 
 
+# RUN mkdir -p /etc/ssl/certs/java \
+# 	&& touch /etc/ssl/certs/java/cacerts
+RUN apt-get update
+RUN echo "Step1"
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
+ 	&& apt-get install -y --no-install-recommends \
+		openjdk-11-jre-headless ca-certificates-java \
+ 	&& apt-get install -y --no-install-recommends openjdk-11-jdk-headless
+RUN echo "Step2"
+RUN apt-get install -y --no-install-recommends \
     maven \
 	postgresql-client
 
