@@ -18,13 +18,15 @@ while ! timeout 1 bash -c "echo > /dev/tcp/$POSTGRES_HOST/$POSTGRES_PORT"; do
 done
 
 echo "Init DB"
+mv $CATALINA_HOME/webapps/cmdbuild/WEB-INF/lib/ignite-*.jar /tmp/
 { # try
   
-    $CATALINA_HOME/webapps/cmdbuild/cmdbuild.sh dbconfig create $CMDBUILD_DUMP -configfile $CATALINA_HOME/conf/cmdbuild/database.conf
+    $CATALINA_HOME/webapps/cmdbuild/cmdbuild.sh em $CMDBUILD_DUMP -configfile $CATALINA_HOME/conf/cmdbuild/database.conf
    
 } || { 
     echo "DB was initiliazed. Use dbconfig recreate or dbconfig drop"
 }
+mc /tmp/ignite-*.jar $CATALINA_HOME/webapps/cmdbuild/WEB-INF/lib/
 
 #echo "Change user to tomcat"
 #su tomcat

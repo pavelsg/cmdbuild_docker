@@ -3,13 +3,14 @@ FROM tomcat:11.0.2-jdk21-temurin-noble
 
 WORKDIR $CATALINA_HOME
 
-ENV CMDBUILD_URL https://sourceforge.net/projects/cmdbuild/files/3.4.2/cmdbuild-3.4.2.war/download
-ENV POSTGRES_USER postgres
-ENV POSTGRES_PASS postgres
-ENV POSTGRES_PORT 5432
-ENV POSTGRES_HOST cmdbuild_db
-ENV POSTGRES_DB cmdbuild_db3
-ENV CMDBUILD_DUMP demo
+ENV CMDBUILD_URL=https://sourceforge.net/projects/cmdbuild/files/3.4.4/cmdbuild-3.4.4.war/download
+# ENV POSTGRES_JDBC_URL=https://jdbc.postgresql.org/download/postgresql-42.2.10.jar
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASS=postgres
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_HOST=cmdbuild_db
+ENV POSTGRES_DB=cmdbuild_db3
+ENV CMDBUILD_DUMP=demo
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
@@ -22,7 +23,7 @@ RUN set -x \
  	&& mkdir $CATALINA_HOME/webapps/cmdbuild/
 
 COPY files/tomcat-users.xml $CATALINA_HOME/conf/tomcat-users.xml
-COPY files/context.xml $CATALINA_HOME/webapps/manager/META-INF/context.xml
+COPY files/manager-context.xml $CATALINA_HOME/webapps/manager/META-INF/context.xml
 COPY files/database.conf $CATALINA_HOME/conf/cmdbuild/database.conf
 COPY files/docker-entrypoint.sh /usr/local/bin/
 
@@ -34,12 +35,16 @@ RUN set -x \
 	&& groupadd tomcat \
 	&& useradd -s /bin/false -g tomcat -d $CATALINA_HOME tomcat \
 	&& cd /tmp \
-	&& wget -O cmdbuild.war --no-check-certificate "$CMDBUILD_URL" \
+	&& wget -O cmdbuild.war "$CMDBUILD_URL" \
+	# && wget -O postgresql-42.2.10.jar "$POSTGRES_JDBC_URL" \
 	&& chmod 777 cmdbuild.war \
 	&& chmod 777 /usr/local/bin/docker-entrypoint.sh \
 	&& unzip cmdbuild.war -d cmdbuild \
+	&& rm -rf webapps/* \
 	&& mv cmdbuild.war $CATALINA_HOME/webapps/cmdbuild.war \
 	&& mv cmdbuild/* $CATALINA_HOME/webapps/cmdbuild/ \
+	# && chown tomcat -R postgresql-42.2.10.jar \
+	# && mv postgresql-42.2.10.jar $CATALINA_HOME/webapps/cmdbuild/WEB-INF/lib/postgresql-42.2.10.jar \
 	&& chmod 777 $CATALINA_HOME/webapps/cmdbuild/cmdbuild.sh \
 	&& chown tomcat -R $CATALINA_HOME \
 	&& cd /tmp \
