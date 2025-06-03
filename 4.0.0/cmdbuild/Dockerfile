@@ -4,7 +4,7 @@ FROM tomcat:11.0.2-jdk21-temurin-noble
 WORKDIR $CATALINA_HOME
 
 ENV CMDBUILD_URL=https://sourceforge.net/projects/cmdbuild/files/4.0.0/cmdbuild-4.0.0.war/download
-# ENV CMDBUILD_URL=files/cmdbuild-4.0.0.war
+ENV CMIS_PLUGIN_URL=https://sourceforge.net/projects/cmdbuild/files/4.0.0/Plugins/cmdbuild-dms-cmis-1.0.0.jar/download
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASS=postgres
 ENV POSTGRES_PORT=5432
@@ -27,8 +27,6 @@ COPY files/manager-context.xml $CATALINA_HOME/webapps/manager/META-INF/context.x
 COPY files/database.conf $CATALINA_HOME/conf/cmdbuild/database.conf
 COPY files/docker-entrypoint.sh /usr/local/bin/
 
-# COPY $CMDBUILD_URL /tmp/cmdbuild.war
-
 # Warning for /usr/local/tomcat/native-jni-lib/libtcnative-1.so.0.2.35: libssl.so.1.1: cannot open shared object file: No such file or directory
 # using solution from here https://stackoverflow.com/a/72633324
 # RUN apt-get install libssl1.1
@@ -38,11 +36,14 @@ RUN set -x \
 	&& useradd -s /bin/false -g tomcat -d $CATALINA_HOME tomcat \
 	&& cd /tmp \
 	&& wget -O cmdbuild.war --no-check-certificate "$CMDBUILD_URL" \
+	&& wget -O cmdbuild-dms-cmis-1.0.0.jar --no-check-certificate "$CMIS_PLUGIN_URL" \
 	&& chmod 777 cmdbuild.war \
 	&& chmod 777 /usr/local/bin/docker-entrypoint.sh \
 	&& unzip cmdbuild.war -d cmdbuild \
 	&& mv cmdbuild.war $CATALINA_HOME/webapps/cmdbuild.war \
 	&& mv cmdbuild/* $CATALINA_HOME/webapps/cmdbuild/ \
+	&& chown tomcat -R cmdbuild-dms-cmis-1.0.0.jar \
+	&& mv cmdbuild-dms-cmis-1.0.0.jar $CATALINA_HOME/webapps/cmdbuild/WEB-INF/lib/cmdbuild-dms-cmis-1.0.0.jar \
 	&& chmod 777 $CATALINA_HOME/webapps/cmdbuild/cmdbuild.sh \
 	&& chown tomcat -R $CATALINA_HOME \
 	&& cd /tmp \
