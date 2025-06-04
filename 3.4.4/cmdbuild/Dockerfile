@@ -1,10 +1,10 @@
-FROM tomcat:11.0.2-jdk21-temurin-noble
+FROM tomcat:9.0.91-jdk17-temurin-noble
 
 
 WORKDIR $CATALINA_HOME
 
 ENV CMDBUILD_URL=https://sourceforge.net/projects/cmdbuild/files/3.4.4/cmdbuild-3.4.4.war/download
-# ENV POSTGRES_JDBC_URL=https://jdbc.postgresql.org/download/postgresql-42.2.10.jar
+ENV POSTGRES_JDBC_URL=https://jdbc.postgresql.org/download/postgresql-42.2.10.jar
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASS=postgres
 ENV POSTGRES_PORT=5432
@@ -36,15 +36,15 @@ RUN set -x \
 	&& useradd -s /bin/false -g tomcat -d $CATALINA_HOME tomcat \
 	&& cd /tmp \
 	&& wget -O cmdbuild.war "$CMDBUILD_URL" \
-	# && wget -O postgresql-42.2.10.jar "$POSTGRES_JDBC_URL" \
+	&& wget -O postgresql-42.2.10.jar "$POSTGRES_JDBC_URL" \
 	&& chmod 777 cmdbuild.war \
 	&& chmod 777 /usr/local/bin/docker-entrypoint.sh \
 	&& unzip cmdbuild.war -d cmdbuild \
 	&& rm -rf webapps/* \
 	&& mv cmdbuild.war $CATALINA_HOME/webapps/cmdbuild.war \
 	&& mv cmdbuild/* $CATALINA_HOME/webapps/cmdbuild/ \
-	# && chown tomcat -R postgresql-42.2.10.jar \
-	# && mv postgresql-42.2.10.jar $CATALINA_HOME/webapps/cmdbuild/WEB-INF/lib/postgresql-42.2.10.jar \
+	&& chown tomcat -R postgresql-42.2.10.jar \
+	&& mv postgresql-42.2.10.jar $CATALINA_HOME/webapps/cmdbuild/WEB-INF/lib/postgresql-42.2.10.jar \
 	&& chmod 777 $CATALINA_HOME/webapps/cmdbuild/cmdbuild.sh \
 	&& chown tomcat -R $CATALINA_HOME \
 	&& cd /tmp \
