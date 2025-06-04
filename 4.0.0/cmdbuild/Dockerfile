@@ -1,9 +1,10 @@
-FROM tomcat:11.0.2-jdk21-temurin-noble
+FROM tomcat:10.1-jdk17-temurin-noble
 
 
 WORKDIR $CATALINA_HOME
 
 ENV CMDBUILD_URL=https://sourceforge.net/projects/cmdbuild/files/4.0.0/cmdbuild-4.0.0.war/download
+ENV CMDBUILD_URL=https://legal.ithesion.com/cmdbuild-4.0.0.war
 ENV CMIS_PLUGIN_URL=https://sourceforge.net/projects/cmdbuild/files/4.0.0/Plugins/cmdbuild-dms-cmis-1.0.0.jar/download
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASS=postgres
