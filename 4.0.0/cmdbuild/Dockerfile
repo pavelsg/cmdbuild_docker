@@ -6,6 +6,7 @@ WORKDIR $CATALINA_HOME
 ENV CMDBUILD_URL=https://sourceforge.net/projects/cmdbuild/files/4.0.0/cmdbuild-4.0.0.war/download
 ENV CMDBUILD_URL=https://legal.ithesion.com/cmdbuild-4.0.0.war
 ENV CMIS_PLUGIN_URL=https://sourceforge.net/projects/cmdbuild/files/4.0.0/Plugins/cmdbuild-dms-cmis-1.0.0.jar/download
+ENV JR_FONTS_URL=https://legal.ithesion.com/google-roboto-family.jar
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASS=postgres
 ENV POSTGRES_PORT=5432
@@ -38,13 +39,16 @@ RUN set -x \
 	&& cd /tmp \
 	&& wget -O cmdbuild.war --no-check-certificate "$CMDBUILD_URL" \
 	&& wget -O cmdbuild-dms-cmis-1.0.0.jar --no-check-certificate "$CMIS_PLUGIN_URL" \
+	&& wget -O jr_font_pack.jar --no-check-certificate "$JR_FONTS_URL" \
 	&& chmod 777 cmdbuild.war \
 	&& chmod 777 /usr/local/bin/docker-entrypoint.sh \
 	&& unzip cmdbuild.war -d cmdbuild \
 	&& mv cmdbuild.war $CATALINA_HOME/webapps/cmdbuild.war \
 	&& mv cmdbuild/* $CATALINA_HOME/webapps/cmdbuild/ \
 	&& chown tomcat -R cmdbuild-dms-cmis-1.0.0.jar \
+	&& chown tomcat -R jr_font_pack.jar \
 	&& mv cmdbuild-dms-cmis-1.0.0.jar $CATALINA_HOME/webapps/cmdbuild/WEB-INF/lib/cmdbuild-dms-cmis-1.0.0.jar \
+	&& mv jr_font_pack.jar $CATALINA_HOME/webapps/cmdbuild/WEB-INF/lib/jr_font_pack.jar \
 	&& chmod 777 $CATALINA_HOME/webapps/cmdbuild/cmdbuild.sh \
 	&& chown tomcat -R $CATALINA_HOME \
 	&& cd /tmp \
