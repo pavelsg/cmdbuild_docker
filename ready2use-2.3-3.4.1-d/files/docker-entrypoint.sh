@@ -5,8 +5,8 @@ cat /dev/null > $CATALINA_HOME/conf/cmdbuild/database.conf
 echo "Edit $CATALINA_HOME/conf/cmdbuild/database.conf"
 {
     echo "db.url=jdbc:postgresql://$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
-    echo "db.username=cmdbuild"
-    echo "db.password=cmdbuild"
+    echo "db.username=$CMDBUILD_DB_USER"
+    echo "db.password=$CMDBUILD_DB_PASS"
     echo "db.admin.username=$POSTGRES_USER"
     echo "db.admin.password=$POSTGRES_PASS"
 } >> $CATALINA_HOME/conf/cmdbuild/database.conf

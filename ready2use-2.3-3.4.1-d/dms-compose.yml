@@ -1,0 +1,88 @@
+version: "3.9"
+
+services:
+  cmdbuild_db:
+    image: postgis/postgis:12-3.3-alpine
+    container_name: cmdbuild_db
+    environment:
+      TZ: ${TZ}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      ALFRESCO_DB_NAME: ${ALFRESCO_DB_NAME}
+      ALFRESCO_DB_USER: ${ALFRESCO_DB_USER}
+      ALFRESCO_DB_PASS: ${ALFRESCO_DB_PASS}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: always
+
+  cmdbuild_app:
+    image: itmicus/cmdbuild:r2u-2.3-3.4.1-d
+    container_name: cmdbuild_app
+    depends_on:
+      cmdbuild_db:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ}
+      CMDBUILD_DB_USER: ${CMDBUILD_DB_USER}
+      CMDBUILD_DB_PASS: ${CMDBUILD_DB_PASS}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASS: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${CMDBUILD_DB_NAME}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      CMDBUILD_DUMP: "demo.dump.xz"
+      JAVA_OPTS: "-Xmx4000m -Xms2000m"
+    mem_limit: 4000m
+    mem_reservation: 2000m
+    ports:
+      - "${CMDBUILD_HOST_PORT}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  alfresco:
+    image: alfresco/alfresco-content-repository-community:6.2.0-ga
+    container_name: alfresco
+    user: "0:0"     # write config and chown, then drop privileges
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ}
+      ALFRESCO_DB_NAME: ${ALFRESCO_DB_NAME}
+      ALFRESCO_DB_USER: ${ALFRESCO_DB_USER}
+      ALFRESCO_DB_PASS: ${ALFRESCO_DB_PASS}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    volumes:
+      - alf_data:/usr/local/tomcat/alf_data
+      - ./alfresco/write-alfresco-props.sh:/usr/local/bin/write-alfresco-props.sh:ro
+      - ./alfresco/cmdbuild-model.xml:/usr/local/tomcat/shared/classes/alfresco/extension/cmdbuild-model.xml
+      - ./alfresco/cmdbuild-model-context.xml:/usr/local/tomcat/shared/classes/alfresco/extension/cmdbuild-model-context.xml
+
+    command:
+      - bash
+      - -lc
+      - |
+        /usr/local/bin/write-alfresco-props.sh
+        chown -R 33000:1000 /usr/local/tomcat/alf_data
+        exec su -s /bin/sh -c 'catalina.sh run' alfresco
+    ports:
+      - "${ALFRESCO_HOST_PORT}:8080"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  alf_data:
