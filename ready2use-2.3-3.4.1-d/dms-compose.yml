@@ -1,9 +1,9 @@
 version: "3.9"
 
 services:
-  cmdbuild-db:
+  cmdbuilddb:
     image: postgis/postgis:12-3.3-alpine
-    container_name: cmdbuild-db
+    container_name: cmdbuilddb
     environment:
       TZ: ${TZ}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -24,11 +24,11 @@ services:
       retries: 20
     restart: always
 
-  cmdbuild-app:
+  cmdbuildapp:
     image: itmicus/cmdbuild:r2u-2.3-3.4.1-d
-    container_name: cmdbuild-app
+    container_name: cmdbuildapp
     depends_on:
-      cmdbuild-db:
+      cmdbuilddb:
         condition: service_healthy
     environment:
       TZ: ${TZ}
@@ -52,12 +52,12 @@ services:
       retries: 20
     restart: unless-stopped
 
-  cmdbuild-dms:
+  cmdbuilddms:
     image: alfresco/alfresco-content-repository-community:6.2.0-ga
-    container_name: cmdbuild-dms
+    container_name: cmdbuilddms
     user: "0:0"     # write config and chown, then drop privileges
     depends_on:
-      cmdbuild-db:
+      cmdbuilddb:
         condition: service_healthy
     environment:
       TZ: ${TZ}
