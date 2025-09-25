@@ -52,12 +52,12 @@ services:
       retries: 20
     restart: unless-stopped
 
-  alfresco:
+  cmdbuild_dms:
     image: alfresco/alfresco-content-repository-community:6.2.0-ga
-    container_name: alfresco
+    container_name: cmdbuild_dms
     user: "0:0"     # write config and chown, then drop privileges
     depends_on:
-      postgres:
+      cmdbuild_db:
         condition: service_healthy
     environment:
       TZ: ${TZ}
